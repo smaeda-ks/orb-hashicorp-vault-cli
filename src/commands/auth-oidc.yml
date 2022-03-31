@@ -25,9 +25,9 @@ parameters:
         type: boolean
 steps:
     - when:
-        condition: << parameters.vault-tls-skip-verify >>
-        steps:
-            - run: echo 'export VAULT_SKIP_VERIFY=true' >> $BASH_ENV
+          condition: << parameters.vault-tls-skip-verify >>
+          steps:
+              - run: echo 'export VAULT_SKIP_VERIFY=true' >> $BASH_ENV
     - run:
           command: |
               if [ ! "$(which vault)" ]; then

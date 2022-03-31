@@ -28,41 +28,41 @@ jobs:
       - run:
           name: Start local Vault dev server (Docker)
           command: |
-              docker run -d --cap-add=IPC_LOCK -p 8200:8200 -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' vault
+            docker run -d --cap-add=IPC_LOCK -p 8200:8200 -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' vault
       - orb-hashicorp-vault-cli/install
       - run: vault --version
       - run:
           name: Set up Vault dev server
           command: |
-              vault auth enable jwt
+            vault auth enable jwt
 
-              vault write auth/jwt/config \
-                bound_issuer="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}" \
-                oidc_discovery_url="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}"
+            vault write auth/jwt/config \
+              bound_issuer="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}" \
+              oidc_discovery_url="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}"
 
-              vault kv put secret/circleci/orb test=foo
+            vault kv put secret/circleci/orb test=foo
 
-              vault policy write circleci-orb-dev -\<<EOF
-              path "secret/data/circleci/orb" {
-                capabilities = ["read"]
-              }
-              EOF
+            vault policy write circleci-orb-dev -\<<EOF
+            path "secret/data/circleci/orb" {
+              capabilities = ["read"]
+            }
+            EOF
 
-              vault write auth/jwt/role/circleci-orb-dev -\<<EOF
-              {
-                "role_type": "jwt",
-                "user_claim": "sub",
-                "bound_claims": {
-                  "aud": "${CIRCLECI_ORG_ID}"
-                },
-                "policies": ["circleci-orb-dev"],
-                "ttl": "1h"
-              }
-              EOF
-              exit 0
+            vault write auth/jwt/role/circleci-orb-dev -\<<EOF
+            {
+              "role_type": "jwt",
+              "user_claim": "sub",
+              "bound_claims": {
+                "aud": "${CIRCLECI_ORG_ID}"
+              },
+              "policies": ["circleci-orb-dev"],
+              "ttl": "1h"
+            }
+            EOF
+            exit 0
           environment:
-              VAULT_TOKEN: myroot
-              VAULT_ADDR: "http://localhost:8200"
+            VAULT_TOKEN: myroot
+            VAULT_ADDR: "http://localhost:8200"
       - orb-hashicorp-vault-cli/auth-oidc:
           vault-address: "http://localhost:8200"
           vault-role: "circleci-orb-dev"
