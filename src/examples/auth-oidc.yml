@@ -9,7 +9,7 @@ usage:
       jobs:
         my-job:
           machine: true
-          steps: 
+          steps:
             - checkout
             # Install Vault
             - orb-hashicorp-vault-cli/install
@@ -19,9 +19,9 @@ usage:
               vault-address: "http://localhost:8200"
               vault-role: "circleci-dev"
             - run:
-              name: Get secret
-              command: |
-                # export secret using $BASH_ENV
-                # so it can be referenced by subsequent steps within the job
-                FOO=$(vault kv get -field=foo secret/circleci/orb)
-                echo "export SECRET_FOO=${FOO}" >> $BASH_ENV
+                name: Get secret
+                command: |
+                  # export secret using $BASH_ENV
+                  # so it can be referenced by subsequent steps within the job
+                  FOO=$(vault kv get -field=foo secret/circleci/orb)
+                  echo "export SECRET_FOO=${FOO}" >> $BASH_ENV
