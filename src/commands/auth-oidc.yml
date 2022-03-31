@@ -1,0 +1,47 @@
+description: |
+    Authenticate with Vault using OIDC and obtain a token.
+    Upon a successful authentication, the obtained token will be set to VAULT_TOKEN environment variable using $BASH_ENV.
+parameters:
+    vault-address:
+        description: Vault address (e.g., https://127.0.0.1:8200)
+        type: string
+    vault-role:
+        description: The role name of the JWT/OIDC auth backend
+        type: string
+    vault-auth-mount-path:
+        default: auth/jwt
+        description: The mount path of the auth backend to be used
+        type: string
+    vault-namespace:
+        default: ""
+        description: The Vault namespace to use
+        type: string
+    vault-tls-skip-verify:
+        default: false
+        description: |
+            Disable verification of TLS certificates. Using this option is highly
+            discouraged as it decreases the security of data transmissions to and
+            from the Vault server.
+        type: boolean
+steps:
+    - when:
+        condition: << parameters.vault-tls-skip-verify >>
+        steps:
+            - run: echo 'export VAULT_SKIP_VERIFY=true' >> $BASH_ENV
+    - run:
+          command: |
+              if [ ! "$(which vault)" ]; then
+                  echo "vault is not installed. Please use install command first."
+                  exit 1
+              fi
+
+              if [ -n "<<parameters.vault-namespace>>" ]; then
+                  echo 'export VAULT_NAMESPACE=<<parameters.vault-namespace>>' >> $BASH_ENV
+              fi
+
+              echo 'export VAULT_ADDR=<<parameters.vault-address>>' >> $BASH_ENV
+              source $BASH_ENV
+
+              VAULT_TOKEN="$(vault write -field=token <<parameters.vault-auth-mount-path>>/login role=<<parameters.vault-role>> jwt=$CIRCLE_OIDC_TOKEN)"
+              echo "export VAULT_TOKEN=${VAULT_TOKEN}" >> $BASH_ENV
+          name: Authenticate with Vault

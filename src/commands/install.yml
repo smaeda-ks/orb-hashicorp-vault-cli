@@ -1,0 +1,81 @@
+description: Install Vautl binary
+parameters:
+    version:
+        default: latest
+        description: Select a specific version of the Vault binary. By default the latest version will be used.
+        type: string
+    install-dir:
+        default: ~/bin
+        description: Directory in which to install vault
+        type: string
+steps:
+    - run:
+          command: |
+              # Quietly try to make the install directory.
+              mkdir -p << parameters.install-dir >> | true
+
+              # Selectively export the SUDO command, depending if we have permission
+              # for a directory and whether we're running alpine.
+              if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+                  if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "<< parameters.install-dir >>" ]]; then
+                      export SUDO="sudo";
+                  fi
+              fi
+
+              echo 'export PATH=$PATH:<< parameters.install-dir >>' >> $BASH_ENV
+              source $BASH_ENV
+
+              if [ ! "$(which vault)" ]; then
+                  # setup
+                  if [ ! "$PARAM_VAULT_VERSION" = "latest" ]; then
+                      export VAULT_VER_STRING="$PARAM_VAULT_VERSION"
+                  else
+                      export VAULT_VER_STRING="$VAULT_VERSION_LATEST"
+                  fi
+
+                  echo "Installing Vault binary"
+                  cd /tmp || exit
+                  # Platform check
+                  if uname -a | grep "Darwin"; then
+                      export SYS_ENV_PLATFORM=macos
+                  elif uname -a | grep "x86_64 GNU/Linux"; then
+                      export SYS_ENV_PLATFORM=linux_x86
+                  elif uname -a | grep "aarch64 GNU/Linux"; then
+                      export SYS_ENV_PLATFORM=linux_arm
+                  else
+                      :
+                  fi
+                  echo "Platform $SYS_ENV_PLATFORM"
+                  # Install per platform
+                  case $SYS_ENV_PLATFORM in
+                  linux_x86)
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_linux_amd64.zip"
+                      ;;
+                  linux_arm)
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_linux_arm64.zip"
+                      ;;
+                  macos)
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_darwin_amd64.zip"
+                      ;;
+                  *)
+                      uname -a
+                      echo "This orb does not currently support your platform. If you believe it should, please consider opening an issue on the GitHub repository:"
+                      echo "https://github.com/xxxx/xxxx/issues/new"
+                      exit 1
+                  ;;
+                  esac
+
+                  # Install
+                  curl -sSL "${VAULT_DOWNLOAD_URL}" -o "vault.zip"
+                  unzip -q -o vault.zip
+                  $SUDO mv ./vault <<parameters.install-dir>>/vault
+                  rm vault.zip
+              else
+                  echo "Vault binary is already installed, skipping installation."
+                  vault --version
+                  exit 0
+              fi
+          environment:
+              PARAM_VAULT_VERSION: <<parameters.version>>
+              VAULT_VERSION_LATEST: 1.10.0
+          name: Install Vault binary - <<parameters.version>>
