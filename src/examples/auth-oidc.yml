@@ -3,25 +3,27 @@ description: |
 usage:
   version: 2.1
   orbs:
-    orb-hashicorp-vault-cli: smaeda-ks/orb-hashicorp-vault-cli@0.1.0
+    orb-hashicorp-vault-cli: smaeda-ks/orb-hashicorp-vault-cli@0.1
+  jobs:
+    my-job:
+      machine: true
+      steps:
+        - checkout
+        # Install Vault
+        - orb-hashicorp-vault-cli/install
+        # Authenticate using OIDC and obtain token
+        # This will automatically set VAULT_TOKEN env variable
+        - orb-hashicorp-vault-cli/auth-oidc:
+            vault-address: "http://localhost:8200"
+            vault-role: "circleci-dev"
+        - run:
+            name: Get secret
+            command: |
+              # export secret using $BASH_ENV
+              # so it can be referenced by subsequent steps within the job
+              FOO=$(vault kv get -field=foo secret/circleci/orb)
+              echo "export SECRET_FOO=${FOO}" >> $BASH_ENV
   workflows:
     use-my-orb:
       jobs:
-        my-job:
-          machine: true
-          steps:
-            - checkout
-            # Install Vault
-            - orb-hashicorp-vault-cli/install
-            # Authenticate using OIDC and obtain token
-            # This will automatically set VAULT_TOKEN env variable
-            - orb-hashicorp-vault-cli/auth-oidc:
-                vault-address: "http://localhost:8200"
-                vault-role: "circleci-dev"
-            - run:
-                name: Get secret
-                command: |
-                  # export secret using $BASH_ENV
-                  # so it can be referenced by subsequent steps within the job
-                  FOO=$(vault kv get -field=foo secret/circleci/orb)
-                  echo "export SECRET_FOO=${FOO}" >> $BASH_ENV
+        - my-job
