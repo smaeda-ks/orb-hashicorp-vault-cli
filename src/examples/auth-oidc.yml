@@ -16,8 +16,8 @@ usage:
             # Authenticate using OIDC and obtain token
             # This will automatically set VAULT_TOKEN env variable
             - orb-hashicorp-vault-cli/auth-oidc:
-              vault-address: "http://localhost:8200"
-              vault-role: "circleci-dev"
+                vault-address: "http://localhost:8200"
+                vault-role: "circleci-dev"
             - run:
                 name: Get secret
                 command: |
