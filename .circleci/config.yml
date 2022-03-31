@@ -76,8 +76,8 @@ workflows:
       - orb-tools/lint # Lint Yaml files
       - orb-tools/pack # Pack orb source
       # optional: Run BATS tests against your scripts
-      - bats/run:
-          path: ./src/tests
+      # - bats/run:
+      #     path: ./src/tests
       # Publish development version(s) of the orb.
       - orb-tools/publish-dev:
           orb-name: smaeda-ks/orb-hashicorp-vault-cli
