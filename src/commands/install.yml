@@ -2,7 +2,7 @@ description: Install Vautl binary
 parameters:
     version:
         default: latest
-        description: Select a specific version of the Vault binary. By default the latest version will be used.
+        description: Select a specific version of the Vault binary (e.g., "1.10.0"). By default the latest version will be used.
         type: string
     install-dir:
         default: ~/bin
