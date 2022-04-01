@@ -3,7 +3,7 @@ version: 2.1
 description: |
     Provide commands to install HashiCorp Vault binary and obtain a token by authenticating with Vault using OIDC.
 
-    Supports Linux x86_64/Arm64, and MacOS (Amd64).
+    Supports Linux x86_64/Arm64-V8, and MacOS (Amd64).
 
 # This information will be displayed in the orb registry and is not mandatory.
 display:
