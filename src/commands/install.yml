@@ -22,6 +22,11 @@ steps:
                   fi
               fi
 
+              # If our first mkdir didn't succeed, try it again as sudo.
+              if [ ! -w << parameters.install-dir >> ]; then
+                  $SUDO mkdir -p << parameters.install-dir >>
+              fi
+
               echo 'export PATH=$PATH:<< parameters.install-dir >>' >> $BASH_ENV
               source $BASH_ENV
 
@@ -60,7 +65,7 @@ steps:
                   *)
                       uname -a
                       echo "This orb does not currently support your platform. If you believe it should, please consider opening an issue on the GitHub repository:"
-                      echo "https://github.com/xxxx/xxxx/issues/new"
+                      echo "https://github.com/smaeda-ks/orb-hashicorp-vault-cli/issues/new"
                       exit 1
                   ;;
                   esac
