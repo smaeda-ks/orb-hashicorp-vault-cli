@@ -49,13 +49,13 @@ steps:
                   # Install per platform
                   case $SYS_ENV_PLATFORM in
                   linux_x86)
-                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_linux_amd64.zip"
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VER_STRING}/vault_${VAULT_VER_STRING}_linux_amd64.zip"
                       ;;
                   linux_arm)
-                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_linux_arm64.zip"
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VER_STRING}/vault_${VAULT_VER_STRING}_linux_arm64.zip"
                       ;;
                   macos)
-                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/1.10.0/vault_${VAULT_VER_STRING}_darwin_amd64.zip"
+                      VAULT_DOWNLOAD_URL="https://releases.hashicorp.com/vault/${VAULT_VER_STRING}/vault_${VAULT_VER_STRING}_darwin_amd64.zip"
                       ;;
                   *)
                       uname -a
@@ -66,7 +66,7 @@ steps:
                   esac
 
                   # Install
-                  curl -sSL "${VAULT_DOWNLOAD_URL}" -o "vault.zip"
+                  curl -sSL "${VAULT_DOWNLOAD_URL}" --fail --retry 3 -o "vault.zip"
                   unzip -q -o vault.zip
                   $SUDO mv ./vault <<parameters.install-dir>>/vault
                   rm vault.zip
