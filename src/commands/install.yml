@@ -1,4 +1,4 @@
-description: Install Vautl binary
+description: Install Vault binary
 parameters:
     version:
         default: latest
