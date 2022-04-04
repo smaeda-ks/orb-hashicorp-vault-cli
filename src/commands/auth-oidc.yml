@@ -1,6 +1,6 @@
 description: |
     Authenticate with Vault using OIDC and obtain a token.
-    Upon a successful authentication, the obtained token will be set to VAULT_TOKEN environment variable using $BASH_ENV.
+    Upon successful authentication, the obtained token will be set to the VAULT_TOKEN environment variable using $BASH_ENV.
 parameters:
     vault-address:
         description: Vault address (e.g., https://127.0.0.1:8200)
