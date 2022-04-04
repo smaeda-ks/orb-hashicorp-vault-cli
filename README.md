@@ -50,7 +50,7 @@ usage:
 
 An example Vault configuration can be found in this repository's `.circleci` folder:
 
-https://github.com/smaeda-ks/orb-hashicorp-vault-cli/blob/main/.circleci/config.yml
+https://github.com/smaeda-ks/orb-hashicorp-vault-cli/blob/main/.circleci
 
 ## Resources
 
