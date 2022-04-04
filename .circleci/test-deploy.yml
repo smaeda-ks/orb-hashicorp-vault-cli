@@ -1,0 +1,79 @@
+version: 2.1
+orbs:
+  orb-hashicorp-vault-cli: smaeda-ks/orb-hashicorp-vault-cli@dev:<<pipeline.git.revision>>
+  orb-tools: circleci/orb-tools@11.1
+
+filters: &filters
+  tags:
+    only: /.*/
+
+jobs:
+  integration-test:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Start local Vault dev server (Docker)
+          command: |
+            docker run -d --cap-add=IPC_LOCK -p 8200:8200 -e 'VAULT_DEV_ROOT_TOKEN_ID=myroot' vault
+      - orb-hashicorp-vault-cli/install
+      - run: vault --version
+      - run:
+          name: Set up Vault dev server
+          command: |
+            vault auth enable jwt
+
+            vault write auth/jwt/config \
+              bound_issuer="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}" \
+              oidc_discovery_url="https://oidc.circleci.com/org/${CIRCLECI_ORG_ID}"
+
+            vault kv put secret/circleci/orb test=foo
+
+            vault policy write circleci-orb-dev -\<<EOF
+            path "secret/data/circleci/orb" {
+              capabilities = ["read"]
+            }
+            EOF
+
+            vault write auth/jwt/role/circleci-orb-dev -\<<EOF
+            {
+              "role_type": "jwt",
+              "user_claim": "sub",
+              "bound_claims": {
+                "aud": "${CIRCLECI_ORG_ID}"
+              },
+              "policies": ["circleci-orb-dev"],
+              "ttl": "1h"
+            }
+            EOF
+            exit 0
+          environment:
+            VAULT_TOKEN: myroot
+            VAULT_ADDR: "http://localhost:8200"
+      - orb-hashicorp-vault-cli/auth-oidc:
+          vault-address: "http://localhost:8200"
+          vault-role: "circleci-orb-dev"
+      - run: vault kv get -field=test secret/circleci/orb
+workflows:
+  test-deploy:
+    jobs:
+      # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
+      - integration-test:
+          filters: *filters
+          context: orb-publishing
+      - orb-tools/pack:
+          filters: *filters
+      - orb-tools/publish:
+          orb-name: smaeda-ks/orb-hashicorp-vault-cli
+          vcs-type: <<pipeline.project.type>>
+          pub-type: production
+          enable-pr-comment: false
+          requires:
+            - orb-tools/pack
+            - integration-test
+          context: orb-publishing
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
