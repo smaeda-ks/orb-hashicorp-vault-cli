@@ -10,7 +10,7 @@ filters: &filters
 jobs:
   integration-test:
     machine:
-      - image: ubuntu-2004:current
+      image: ubuntu-2004:current
     steps:
       - checkout
       - run:
