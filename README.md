@@ -41,6 +41,8 @@ usage:
               # so it can be referenced by subsequent steps within the job
               FOO=$(vault kv get -field=password secret/circleci/dev)
               echo "export SECRET_FOO=${FOO}" >> $BASH_ENV
+        # Revoke Vault token after finishing all steps
+        - orb-hashicorp-vault-cli/revoke-self
   workflows:
     use-my-orb:
       jobs:
