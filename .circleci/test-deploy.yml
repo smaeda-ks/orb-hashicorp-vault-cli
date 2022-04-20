@@ -53,7 +53,18 @@ jobs:
       - orb-hashicorp-vault-cli/auth-oidc:
           vault-address: "http://localhost:8200"
           vault-role: "circleci-orb-dev"
-      - run: vault kv get -field=test secret/circleci/orb
+      - run:
+          name: Get secret
+          command: vault kv get -field=test secret/circleci/orb
+      - orb-hashicorp-vault-cli/revoke-self
+      - run:
+          name: Get secret (should fail)
+          command: |
+              ret=$(set -e; vault kv get -field=test secret/circleci/orb &&:) &&:
+              if [ $? -eq 0 ]; then
+                exit 1
+              fi
+              exit 0
 workflows:
   test-deploy:
     jobs:

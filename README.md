@@ -5,12 +5,13 @@
 
 A custom CircleCI Orb for HashiCorp Vault CLI.
 
-This Orb provides two [commands](https://circleci.com/docs/2.0/orb-concepts/#commands) as below:
+This Orb provides a few [commands](https://circleci.com/docs/2.0/orb-concepts/#commands) as below:
 
 | Command | Description | Documentation |
 | ---| --- | --- |
 | `install`   | Install Vault binary to the current executor environment. | [link](https://circleci.com/developer/orbs/orb/smaeda-ks/orb-hashicorp-vault-cli#commands-install) |
 | `auth-oidc` | Authenticate with Vault using OIDC and obtain a token. Upon successful authentication, the obtained token will be set to the `VAULT_TOKEN` environment variable using `$BASH_ENV`. | [link](https://circleci.com/developer/orbs/orb/smaeda-ks/orb-hashicorp-vault-cli#commands-auth-oidc) |
+| `revoke-self`   | Revoke the token set to the `VAULT_TOKEN` environment variable against the Vault instance set to the `VAULT_ADDR` environment variable. | [link](https://circleci.com/developer/orbs/orb/smaeda-ks/orb-hashicorp-vault-cli#commands-revoke-self) |
 
 ## Example Orb usage
 

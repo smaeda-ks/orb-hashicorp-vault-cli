@@ -1,0 +1,14 @@
+description: |
+  Revoke a Token (Self).
+  This command attempts to revoke the token set to the `VAULT_TOKEN` environment variable against the Vault instance set to the `VAULT_ADDR` environment variable. These environment variables are assumed to be already set by the `auth-oidc` command in the previous steps. When the token is revoked, all dynamic secrets generated with it are also revoked.
+steps:
+  - run:
+      command: |
+        if [ ! "$(which vault)" ]; then
+            echo "vault is not installed. Please use install command first."
+            exit 1
+        fi
+
+        vault token revoke -self
+
+      name: Revoke Vault token
