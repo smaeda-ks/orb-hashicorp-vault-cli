@@ -35,7 +35,8 @@ steps:
                   if [ ! "$PARAM_VAULT_VERSION" = "latest" ]; then
                       export VAULT_VER_STRING="$PARAM_VAULT_VERSION"
                   else
-                      export VAULT_VER_STRING="$VAULT_VERSION_LATEST"
+                      PARAM_VAULT_VERSION=$(basename $(curl -fs -o /dev/null -w %{redirect_url} https://github.com/hashicorp/vault/releases/latest) | sed 's/v//')
+                      export VAULT_VER_STRING="$PARAM_VAULT_VERSION"
                   fi
 
                   echo "Installing Vault binary"
@@ -82,5 +83,4 @@ steps:
               fi
           environment:
               PARAM_VAULT_VERSION: <<parameters.version>>
-              VAULT_VERSION_LATEST: 1.10.0
           name: Install Vault binary - <<parameters.version>>
