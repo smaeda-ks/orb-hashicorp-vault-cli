@@ -28,4 +28,5 @@ usage:
   workflows:
     use-my-orb:
       jobs:
-        - my-job
+        - my-job:
+            context: my-context

@@ -46,7 +46,9 @@ usage:
   workflows:
     use-my-orb:
       jobs:
-        - my-job
+        - my-job:
+            # You must use context for jobs require OIDC
+            context: my-context
 ```
 
 ## Example Vault configuration
