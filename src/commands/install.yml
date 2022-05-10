@@ -8,7 +8,10 @@ parameters:
         default: ~/bin
         description: Directory in which to install vault
         type: string
+orbs:
+  jq: circleci/jq@2.2.0
 steps:
+    - jq/install
     - run:
           command: |
               # Quietly try to make the install directory.
@@ -35,7 +38,7 @@ steps:
                   if [ ! "$PARAM_VAULT_VERSION" = "latest" ]; then
                       export VAULT_VER_STRING="$PARAM_VAULT_VERSION"
                   else
-                      PARAM_VAULT_VERSION=$(basename $(curl -fs -o /dev/null -w %{redirect_url} https://github.com/hashicorp/vault/releases/latest) | sed 's/v//')
+                      PARAM_VAULT_VERSION=$(curl -fs https://api.releases.hashicorp.com/v1/releases/vault/latest | jq -r '.version')
                       export VAULT_VER_STRING="$PARAM_VAULT_VERSION"
                   fi
 
