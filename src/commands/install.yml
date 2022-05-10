@@ -8,8 +8,6 @@ parameters:
         default: ~/bin
         description: Directory in which to install vault
         type: string
-orbs:
-  jq: circleci/jq@2.2.0
 steps:
     - jq/install
     - run:
