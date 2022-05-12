@@ -9,6 +9,5 @@ description: |
 display:
     source_url: https://github.com/smaeda-ks/orb-hashicorp-vault-cli
 
-# If your orb requires other orbs, you can import them like this. Otherwise remove the "orbs" stanza.
-# orbs:
-#  hello: circleci/hello-build@0.0.5
+orbs:
+  jq: circleci/jq@2.2.0
